@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideX - Smart Cab Booking</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-indigo-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">RideX</h1>
+                <div class="flex space-x-4">
+                    <button class="px-4 py-2 bg-white text-indigo-600 rounded-lg font-medium hover:bg-indigo-100">
+                        <i class="bi bi-person-fill"></i> Login
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Tabs -->
+            <div class="mb-8 flex space-x-4 overflow-x-auto">
+                <button class="tab-button px-6 py-3 bg-indigo-600 text-white rounded-lg" data-tab="booking">
+                    <i class="bi bi-car-front-fill mr-2"></i>Book Ride
+                </button>
+                <button class="tab-button px-6 py-3 bg-white text-gray-700 rounded-lg" data-tab="scanner">
+                    <i class="bi bi-qr-code-scan mr-2"></i>Scanner
+                </button>
+                <button class="tab-button px-6 py-3 bg-white text-gray-700 rounded-lg" data-tab="info">
+                    <i class="bi bi-info-circle mr-2"></i>Information
+                </button>
+            </div>
+
+            <!-- Booking Tab -->
+            <div id="booking" class="tab-content active">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold mb-6">Book Your Ride</h2>
+                    <div class="space-y-4">
+                        <div class="flex flex-col space-y-2">
+                            <label class="font-medium">Pickup Location</label>
+                            <input type="text" class="border p-3 rounded-lg" placeholder="Enter pickup location">
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="font-medium">Drop Location</label>
+                            <input type="text" class="border p-3 rounded-lg" placeholder="Enter drop location">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex flex-col space-y-2">
+                                <label class="font-medium">Date</label>
+                                <input type="date" class="border p-3 rounded-lg">
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <label class="font-medium">Time</label>
+                                <input type="time" class="border p-3 rounded-lg">
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="font-medium">Ride Type</label>
+                            <select class="border p-3 rounded-lg">
+                                <option>Regular Cab</option>
+                                <option>Shared Ride</option>
+                                <option>Premium Cab</option>
+                            </select>
+                        </div>
+                        <button class="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700">
+                            Find Drivers
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scanner Tab -->
+            <div id="scanner" class="tab-content">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold mb-6">Scan QR Code</h2>
+                    <div id="reader" class="w-full"></div>
+                    <div id="result" class="mt-4 text-center"></div>
+                </div>
+            </div>
+
+            <!-- Information Tab -->
+            <div id="info" class="tab-content">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-2xl font-bold mb-6">Information</h2>
+                    <div class="space-y-6">
+                        <div class="border-b pb-4">
+                            <h3 class="text-lg font-semibold mb-2">How it works</h3>
+                            <p class="text-gray-600">Book your ride in 3 simple steps:</p>
+                            <ol class="list-decimal ml-6 mt-2 text-gray-600">
+                                <li>Enter your pickup and drop location</li>
+                                <li>Choose your preferred ride type</li>
+                                <li>Confirm your booking and track your ride</li>
+                            </ol>
+                        </div>
+                        <div class="border-b pb-4">
+                            <h3 class="text-lg font-semibold mb-2">Safety Features</h3>
+                            <ul class="list-disc ml-6 text-gray-600">
+                                <li>Real-time ride tracking</li>
+                                <li>Emergency SOS button</li>
+                                <li>Driver verification</li>
+                                <li>24/7 customer support</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">Contact Support</h3>
+                            <p class="text-gray-600">Need help? Reach our support team:</p>
+                            <div class="mt-2">
+                                <p class="text-gray-600"><i class="bi bi-telephone mr-2"></i>1800-123-4567</p>
+                                <p class="text-gray-600"><i class="bi bi-envelope mr-2"></i>support@ridex.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Update button styles
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-700');
+                });
+                button.classList.remove('bg-white', 'text-gray-700');
+                button.classList.add('bg-indigo-600', 'text-white');
+
+                // Show selected tab content
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+
+                // Initialize Scanner when scanner tab is active
+                if (tabId === 'scanner') {
+                    initializeScanner();
+                }
+            });
+        });
+
+        // QR Scanner Implementation
+        function initializeScanner() {
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 });
+
+            html5QrcodeScanner.render((decodedText, decodedResult) => {
+                document.getElementById('result').innerHTML = `
+                    <div class="p-4 bg-green-100 text-green-700 rounded-lg">
+                        <p class="font-medium">QR Code Scanned Successfully!</p>
+                        <p class="text-sm mt-1">${decodedText}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Initialize Database
+        const userId = localStorage.getItem('userId') || 'user-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
+
+        // Save booking to database
+        async function saveBooking(bookingData) {
+            try {
+                const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/db', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer thd5TOpnMbhyQZ03i3QN7KwRD3H2',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        appSlug: 'ridex-app',
+                        action: 'create',
+                        table: 'bookings',
+                        data: bookingData
+                    })
+                });
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error saving booking:', error);
+                return null;
+            }
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
